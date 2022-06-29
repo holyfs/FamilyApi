@@ -12,7 +12,7 @@ app.url_map.strict_slashes = False
 CORS(app)
 
 # create the jackson family object
-jackson_family = FamilyStructure()
+jackson_family = FamilyStructure("Jackson")
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -28,38 +28,30 @@ def sitemap():
 def handle_hello():
     # this is how you can use the Family datastructure by calling its methods
     members = jackson_family.get_all_members()
-    response_body = {
-        "msg": "ok",
-        "family": members
-    }
-    return jsonify(response_body), 200
+    return jsonify(members), 200
 
-@app.route('/members', methods=['POST'])
+@app.route('/member', methods=['POST'])
 def add_member():
     body=request.get_json()
     member = {
         "first_name": body["first_name"],
-        "last_name":body["last_name"],
         "age":body["age"],
-        "lucky_numbers":body["lucky_numbers"]
+        "lucky_numbers":body["lucky_numbers"],
+        "id":body["id"]
     }
     jackson_family.add_member(member)
-    return jsonify({"msg": "Member created!"}), 201
+    return jsonify(member), 200
 
-@app.route('/members/<int:member_id>', methods=['GET'])
-def get_member_by_id(member_id):
-    member = jackson_family.get_member(member_id)
-    response_body = {
-        "msg": "ok",
-        "family": member
-    }
-    return jsonify(response_body), 200
+@app.route('/member/<int:id>', methods=['GET'])
+def get_member_by_id(id):
+    member = jackson_family.get_member(id)
+    return jsonify(member), 200
     
-@app.route('/members/<int:member_id>', methods=['DELETE'])
-def delete_member_by_id(member_id):
-    member = jackson_family.delete_member(member_id)
+@app.route('/member/<int:id>', methods=['DELETE'])
+def delete_member_by_id(id):
+    member = jackson_family.delete_member(id)
     response_body = {
-        "msg": "ok"
+        "done": True
     }
     return jsonify(response_body), 200
 
